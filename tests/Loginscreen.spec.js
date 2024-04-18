@@ -18,4 +18,22 @@ describe('Blog app', () => {
     const locator = page.getByText('Login Screen')
     await expect(locator).toBeVisible()
   })
+
+  describe('Login', () => {
+    test('Succeeds with correct credentials', async ({ page }) => {
+      await page.getByRole('textbox').first().fill('JoHo')
+      await page.getByRole('textbox').last().fill('salasana')
+      await page.getByRole('button', { name: 'Login' }).click()
+
+      await expect(page.getByText('Logged in as Joni Hostikka')).toBeVisible()
+    })
+
+    test('Fails with wrong credentials', async ({ page }) => {
+      await page.getByRole('textbox').first().fill('JoHo')
+      await page.getByRole('textbox').last().fill('fail')
+      await page.getByRole('button', { name: 'Login' }).click()
+
+      await expect(page.getByText('Wrong username or password')).toBeVisible()
+    })
+  })
 })
