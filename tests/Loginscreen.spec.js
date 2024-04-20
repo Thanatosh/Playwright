@@ -2,7 +2,6 @@ const { test, expect, beforeEach, describe } = require('@playwright/test')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post('http:localhost:3003/api/testing/reset')
     await request.post('http://localhost:3003/api/users', {
       data: {
         name: 'Joni Hostikka',
@@ -34,6 +33,25 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'Login' }).click()
 
       await expect(page.getByText('Wrong username or password')).toBeVisible()
+    })
+  })
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await page.getByRole('textbox').first().fill('JoHo')
+      await page.getByRole('textbox').last().fill('salasana')
+      await page.getByRole('button', { name: 'Login' }).click()
+    })
+  
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button', { name: 'New Blog' }).click()
+      await page.getByTestId('title-input').fill('Testing blog')
+      await page.getByTestId('author-input').fill('J.H')
+      await page.getByTestId('url-input').fill('Testing Url')
+      await page.getByRole('button', { name: 'Create' }).click()
+      
+      await expect(page.getByText('Blog "Testing blog" added')).toBeVisible()
+      await expect(page.getByText('Testing blog by J.H')).toBeVisible()
     })
   })
 })
