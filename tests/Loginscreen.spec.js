@@ -53,5 +53,17 @@ describe('Blog app', () => {
       await expect(page.getByText('Blog "Testing blog" added')).toBeVisible()
       await expect(page.getByText('Testing blog by J.H')).toBeVisible()
     })
+
+    test('User is able to like the post', async ({ page }) => {
+      await page.getByRole('button', { name: 'View' }).last().click()
+      const initialLikesText = await page.$eval('.likes', element => element.innerText)
+      const initialLikes = parseInt(initialLikesText)
+
+      await page.getByRole('button', { name: 'Like' }).click()
+      const updatedLikesText = await page.$eval('.likes', element => element.innerText)
+      const updatedLikes = parseInt(updatedLikesText)
+
+      expect(updatedLikes).toBe(initialLikes + 1)
+    })
   })
 })
