@@ -71,5 +71,14 @@ describe('Blog app', () => {
 
       expect(updatedLikes).toBe(initialLikes + 1)
     })
+
+    test('Only the creator of the blog can see Delete button', async ({ page }) => {
+      await page.getByRole('button', { name: 'View' }).first().click()
+      await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible()
+      await page.getByRole('button', { name: 'Hide' }).click()
+      await page.getByRole('button', { name: 'View' }).last().click()
+      const deleteButton = await page.$('button[id="remove-button"]')
+      expect(deleteButton).toBeNull()
+    })
   })
 })
