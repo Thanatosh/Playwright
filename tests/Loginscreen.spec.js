@@ -43,7 +43,7 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'Login' }).click()
     })
   
-    test('a new blog can be created', async ({ page }) => {
+    test('User can create new blog and delete it', async ({ page }) => {
       await page.getByRole('button', { name: 'New Blog' }).click()
       await page.getByTestId('title-input').fill('Testing blog')
       await page.getByTestId('author-input').fill('J.H')
@@ -52,6 +52,12 @@ describe('Blog app', () => {
       
       await expect(page.getByText('Blog "Testing blog" added')).toBeVisible()
       await expect(page.getByText('Testing blog by J.H')).toBeVisible()
+      
+      await page.getByRole('button', { name: 'View' }).last().click()
+      await page.evaluate(() => {
+        window.confirm = () => true
+      })
+      await page.getByRole('button', { name: 'Delete' }).click()
     })
 
     test('User is able to like the post', async ({ page }) => {
