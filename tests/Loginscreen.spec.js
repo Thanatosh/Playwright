@@ -80,5 +80,47 @@ describe('Blog app', () => {
       const deleteButton = await page.$('button[id="remove-button"]')
       expect(deleteButton).toBeNull()
     })
+
+    test('Blogs are arranged based on their Likes', async ({ page }) => {
+      await page.getByRole('button', { name: 'New Blog' }).click()
+      await page.getByTestId('title-input').fill('First Created')
+      await page.getByTestId('author-input').fill('J.H')
+      await page.getByTestId('url-input').fill('Testing Url')
+      await page.getByRole('button', { name: 'Create' }).click()
+
+      await page.waitForTimeout(200)
+
+      await page.getByRole('button', { name: 'New Blog' }).click()
+      await page.getByTestId('title-input').fill('Second Created')
+      await page.getByTestId('author-input').fill('J.H')
+      await page.getByTestId('url-input').fill('Testing Url2')
+      await page.getByRole('button', { name: 'Create' }).click()
+      
+      await page.waitForTimeout(200)
+
+      await page.getByRole('button', { name: 'View' }).last().click()
+      await page.getByRole('button', { name: 'Like' }).click()
+      await page.getByRole('button', { name: 'Hide' }).click()
+
+      await page.waitForTimeout(200)
+
+      const blogTitles = await page.$$eval('.blog-container strong', blogs => blogs.map(blog => blog.textContent))
+      const indexOfFirstCreated = blogTitles.findIndex(title => title === 'First Created')
+      expect(indexOfFirstCreated).toBe(blogTitles.length - 1)
+
+      await page.getByRole('button', { name: 'View' }).last().click()
+      await page.evaluate(() => {
+        window.confirm = () => true
+      })
+      await page.getByRole('button', { name: 'Delete' }).click()
+
+      await page.waitForTimeout(200)
+
+      await page.getByRole('button', { name: 'View' }).last().click()
+      await page.evaluate(() => {
+        window.confirm = () => true
+      })
+      await page.getByRole('button', { name: 'Delete' }).click()
+    })
   })
 })
